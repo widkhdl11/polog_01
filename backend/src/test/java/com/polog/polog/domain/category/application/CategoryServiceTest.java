@@ -104,4 +104,6 @@ class CategoryServiceTest {
         List<Category> categoryList = categoryService.findAllCategory();
         assertEquals(categoryList.size(), 1);
     }
+    
+    //깃 테스트
 }
