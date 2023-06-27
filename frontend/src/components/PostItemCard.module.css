@@ -1,0 +1,29 @@
+.post-li{
+    width: 80%;
+}
+.post-card{
+    padding: 1rem;
+    display: block;
+    width: 100%;
+    position: relative;
+    border: 1px solid black;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-radius: 10px;
+
+}
+.post-card-title{
+    
+    width: 100%;
+}
+
+.post-card-content{
+    width: 100%;
+    height: 15vh;
+
+}
+
+.post-card-bottom{
+    display: flex;
+    justify-content: space-between;
+}

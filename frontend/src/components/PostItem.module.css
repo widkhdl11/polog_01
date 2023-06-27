@@ -1,0 +1,29 @@
+.article{
+    padding: auto;
+    padding: 75px 100px 50px 100px;
+}
+.top{
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc
+}
+
+.content{
+    min-height: 40vh;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    padding : 5px;
+}
+
+.menu{
+    text-align: center;
+}
+
+.edit-btn{
+    background-color: #e48e6c;
+    border: 1px solid #e48e6c;
+    color: white;
+    padding: 0.25rem 2rem;
+    border-radius: 10px;
+    font-weight: bold;
+    text-decoration: none;
+}
