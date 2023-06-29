@@ -6,6 +6,7 @@ import RootLayout from './pages/Root';
 import MainPage from './pages/Main';
 import PostDetailPage from './pages/PostDetail';
 import PostWritePage from './pages/PostWrite';
+import { action as postingAction } from './components/PostForm'
 
 const router = createBrowserRouter([
   {
@@ -28,8 +29,9 @@ const router = createBrowserRouter([
             element : <MainPage></MainPage>
           },
           {
-            path : "write",
+            path : "new",
             element : <PostWritePage></PostWritePage>,
+            action : postingAction
             
           }
         ]

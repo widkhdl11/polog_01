@@ -23,12 +23,12 @@ code {
 html {
   font-family: 'Noto Sans JP', sans-serif;
   height: auto;
-  min-height: 100%;
+  minHeight: 100%;
 }
 
 body {
   margin: 0 auto;
-  min-height: 100vh;
+  minHeight: 100vh;
 }
 
 

@@ -17,7 +17,7 @@ const MainNavigation = () =>{
                         블로그 이름
                     </li>
                     <li>
-                        <Link to ="/post/write">
+                        <Link to ="/post/new">
                             글쓰기
                         </Link>
 

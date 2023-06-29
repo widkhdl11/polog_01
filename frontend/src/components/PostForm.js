@@ -1,9 +1,12 @@
+import { Form, json, redirect } from 'react-router-dom';
 import classes from './PostForm.module.css'
+import axios from 'axios'
+
 
 const PostForm = () => {
     return(
         <>
-        <form className={classes.form}>
+        <Form method='POST' className={classes.form}>
             <label htmlFor="title">제목</label>
             <input
                 id="title"
@@ -20,13 +23,17 @@ const PostForm = () => {
                 required
             //defaultValue={event ? event.title : ''}
             />
-        </form>
+
+            <button>
+                저장
+            </button>
+        </Form>
         </>
     )
 }
 export default PostForm;
 
-export const action = async ({request, params}) =>{
+export const action = async ({request, params}) => {
 
     const data = await request.formData();
 
@@ -34,12 +41,19 @@ export const action = async ({request, params}) =>{
         title : data.get('title'),
         content : data.get("content")
     }
-
-    axios({
+    const response = axios({
         method: 'post',
-        url: '/api/post/write',
+        url: '/api/post/new',
         data: {
           postData
         }
       });
+    if (response.status === 422) {
+    return response;
+    }
+
+    if (!response.ok) {
+    throw json({ message: 'Could not save event.' }, { status: 500 });
+    }
+    console.log(response)
 }
