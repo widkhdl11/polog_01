@@ -1,4 +1,5 @@
 import classes from './PostForm.module.css'
+import axios from 'axios';
 
 const PostForm = () => {
     return(
@@ -20,6 +21,7 @@ const PostForm = () => {
                 required
             //defaultValue={event ? event.title : ''}
             />
+            <button></button>
         </form>
         </>
     )
@@ -37,7 +39,7 @@ export const action = async ({request, params}) =>{
 
     axios({
         method: 'post',
-        url: '/api/post/write',
+        url: '/api/post/new',
         data: {
           postData
         }

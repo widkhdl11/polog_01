@@ -28,7 +28,7 @@ const router = createBrowserRouter([
             element : <MainPage></MainPage>
           },
           {
-            path : "write",
+            path : "new",
             element : <PostWritePage></PostWritePage>,
             
           }
