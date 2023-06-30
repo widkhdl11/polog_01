@@ -7,7 +7,7 @@ const RootLayout = () => {
         <>
         <MainNavigation></MainNavigation>
         <main style={{
-                    "min-height": "calc(100vh - 20vh)"
+                    "minHeight": "calc(100vh - 20vh)"
 				}}>
             <Outlet></Outlet>
         </main>

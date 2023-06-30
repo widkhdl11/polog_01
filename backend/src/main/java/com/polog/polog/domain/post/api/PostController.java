@@ -33,9 +33,8 @@ public class PostController {
      * @param request
      * @return
      */
-    @PostMapping("api/post/new")
+    @PostMapping("/api/post/new")
     public PostingPostResponse posting(@RequestBody @Valid PostingPostRequest request) {
-
 
 
         Member member = memberService.findOneMember(request.getMember().getUid());
@@ -51,7 +50,6 @@ public class PostController {
                 .state(PostState.COMP)
                 .editDate(null)
                 .build();
-
 
         Long uid = postService.posting(post);
 

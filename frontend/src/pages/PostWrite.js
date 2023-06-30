@@ -1,5 +1,4 @@
 import PostForm from "../components/PostForm";
-import PostItem from "../components/PostItem";
 
 const PostWritePage = () => {
 
