@@ -4,7 +4,7 @@ const PostWritePage = () => {
 
     return(
         <>
-        <PostForm></PostForm>
+            <PostForm method="POST"></PostForm>
         </>
     )
 }

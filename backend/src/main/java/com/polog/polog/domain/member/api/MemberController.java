@@ -1,25 +1,31 @@
 package com.polog.polog.domain.member.api;
 
 
-import com.polog.polog.domain.category.domain.Category;
-import com.polog.polog.domain.category.dto.CreateCategoryListResponse;
-import com.polog.polog.domain.category.dto.DeleteCategoryRequest;
 import com.polog.polog.domain.member.application.MemberService;
 import com.polog.polog.domain.member.domain.Member;
 import com.polog.polog.domain.member.dto.*;
+import com.polog.polog.global.auth.service.AuthService;
+import com.polog.polog.global.dto.token.TokenDto;
 import com.polog.polog.global.util.Result;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+@CrossOrigin(origins = "http://localhost:3000", exposedHeaders = "Authorization")
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class MemberController {
 
     private final MemberService memberService;
+    private final AuthService authService;
 
     /**
      * 회원 등록
@@ -28,6 +34,7 @@ public class MemberController {
      */
     @PostMapping("/api/member/join")
     public CreateMemberResponse joinMember(@RequestBody @Valid CreateMemberRequest request) {
+
 
         Member member = Member.builder()
                 .id(request.getId())
@@ -80,8 +87,37 @@ public class MemberController {
     @DeleteMapping("/api/member/delete/{id}")
     public void deleteMember(@PathVariable("id") String id,@RequestBody DeleteMemberRequest request){
         Member member = DeleteMemberRequest.toEntity(request);
-        memberService.deleteMember(member);
+        memberService.deleteMember(member.getUid());
     }
 
+    /**
+     * 회원 찾기
+     */
+    @GetMapping("/api/member/{memberId}")
+    public Member findOneMemberId(@PathVariable("memberId") String memberId){
+        Member member = memberService.findOneMemberId(memberId);
+        return member;
+    }
+
+
+    @PostMapping("/api/signup")
+    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto requestDto) {
+        return ResponseEntity.ok(authService.signup(requestDto));
+    }
+
+    @PostMapping("/api/login")
+    public ResponseEntity<TokenDto> login(HttpServletRequest request,@RequestBody MemberRequestDto requestDto) {
+        return ResponseEntity.ok(authService.login(request,requestDto));
+    }
+
+
+//    @PatchMapping("/logout")
+//    public ResponseEntity logout(TokenDto request) {
+//        String encryptedRefreshToken = jwtTokenProvider.resolveRefreshToken(request);
+//        String accessToken = jwtTokenProvider.resolveAccessToken(request);
+//        authService.logout(encryptedRefreshToken, accessToken);
+//
+//        return new ResponseEntity<>(new SingleResponseDto<>("Logged out successfully"), HttpStatus.NO_CONTENT);
+//    }
 }
 

@@ -22,7 +22,7 @@ public class UpdatePostRequest {
     private String title;
     private String content;
     private CategoryDto category;
-    private MemberDto member;
+    private MemberDto member; // null
     private LocalDateTime editTime;
     private PostState state;
 

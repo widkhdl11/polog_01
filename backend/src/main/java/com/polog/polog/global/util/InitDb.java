@@ -1,15 +1,15 @@
 package com.polog.polog.global.util;
 
 import com.polog.polog.domain.category.domain.Category;
+import com.polog.polog.domain.member.domain.Authority;
 import com.polog.polog.domain.member.domain.Member;
 import com.polog.polog.domain.post.domain.Post;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 /**
  * 종 주문 2개
@@ -38,17 +38,41 @@ public class InitDb {
     static class InitService {
 
         private final EntityManager em;
-
+        private final PasswordEncoder passwordEncoder;
         public void dbInit1() {
             System.out.println("Init1" + this.getClass());
-            Member member1 = createMember("userA", "1234", "abc@naver.com");
+
+            Member member1 = createMember("userA", passwordEncoder.encode("1234"), "abc@naver.com","ROLE_USER");
+
             em.persist(member1);
 
-            Category category1 = createCategory("Cate1", 0);
-            Category category2 = createCategory("Cate2", 1, 1L);
+            Category category1 = createCategory("Cate1", 1, 0L, member1,1);
+            Category category10 = createCategory("Cate10", 1, 1L, member1,2);
+            Category category11 = createCategory("Cate11", 1, 10L, member1,3);
+            
+            Category category2 = createCategory("Cate2", 3, 0L, member1,1);
+            Category category3 = createCategory("Cate3", 1, 2L, member1,2);
+            Category category4 = createCategory("Cate4", 2, 2L, member1,2);
+
+            Category category5 = createCategory("Cate5", 2, 0L, member1,1);
+            Category category6 = createCategory("Cate6", 1, 5L, member1,2);
+            Category category8 = createCategory("Cate8", 1, 6L, member1,3);
+            Category category9 = createCategory("Cate9", 2, 6L, member1,3);
+
+            Category category7 = createCategory("Cate7", 2, 5L, member1,2);
+
 
             em.persist(category1);
             em.persist(category2);
+            em.persist(category3);
+            em.persist(category4);
+            em.persist(category5);
+            em.persist(category6);
+            em.persist(category7);
+            em.persist(category8);
+            em.persist(category9);
+            em.persist(category10);
+            em.persist(category11);
 
 //            Category category2 = createCategory("Cate2", 0);
 //            em.persist(category2);
@@ -79,30 +103,25 @@ public class InitDb {
 //            em.persist(order);
 //        }
 
-        private Member createMember(String id, String password, String email) {
+        private Member createMember(String id, String password, String email,String authenrity) {
             Member member = Member.builder()
                     .id(id)
                     .password(password)
                     .email(email)
+                    .authority(Authority.ROLE_USER)
                     .build();
             return member;
         }
 
-        private Category createCategory(String name, int order, Long parentUid) {
+        private Category createCategory(String name, int order, Long parentUid, Member member,int step) {
             return Category.builder()
                     .name(name)
                     .order(order)
                     .parentUid(parentUid)
+                    .member(member)
+                    .step(step)
                     .build();
         }
-        private Category createCategory(String name, int order) {
-            return Category.builder()
-                    .name(name)
-                    .order(order)
-                    .build();
-        }
-
-
     }
 }
 

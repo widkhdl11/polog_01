@@ -11,5 +11,14 @@ module.exports = function(app) {
       target: 'http://127.0.0.1:8080', 
       changeOrigin: true,
     })
-  );
+  )
+  app.use(
+    createProxyMiddleware('/auth', {
+      target: 'http://127.0.0.1:8080',
+      // pathRewrite: {
+      //   '^/지우려는패스':''
+      // },
+      changeOrigin: true
+    })
+  )
 };

@@ -3,9 +3,11 @@ package com.polog.polog.domain.post.api;
 import com.polog.polog.domain.category.application.CategoryService;
 import com.polog.polog.domain.category.dao.CategoryRepository;
 import com.polog.polog.domain.category.domain.Category;
+import com.polog.polog.domain.category.dto.CreateCategoryRequest;
 import com.polog.polog.domain.member.application.MemberService;
 import com.polog.polog.domain.member.dao.MemberRepository;
 import com.polog.polog.domain.member.domain.Member;
+import com.polog.polog.domain.member.dto.MemberDto;
 import com.polog.polog.domain.post.application.PostService;
 import com.polog.polog.domain.post.dao.PostRepository;
 import com.polog.polog.domain.post.domain.Post;
@@ -61,15 +63,17 @@ class PostControllerTest {
         //when
         Long savedMemberUid = memberService.join(member);
         Member findMember = memberRepository.findOne(savedMemberUid);
+        MemberDto memberDto = Member.toDto(findMember);
 
-        Category category = Category.builder()
+        CreateCategoryRequest request = CreateCategoryRequest.builder()
                 .name("카테고리1")
-                .parentUid(1L)
                 .order(0)
+                .parentUid(1L)
+                .member(memberDto)
                 .build();
 
         //when
-        Long savedCategoryUid = categoryService.createCategory(category);
+        Long savedCategoryUid = categoryService.createCategory(CreateCategoryRequest.toEntity(request));
         Category findCategory = categoryRepository.findOne(savedCategoryUid);
 
         Post post = Post.createPost(findMember,findCategory,"첫글 제목", "첫글 내용");

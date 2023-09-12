@@ -22,8 +22,9 @@ public class CategoryRepository {
     public Category findOne(Long uid){
         return em.find(Category.class, uid);
     }
-    public List<Category> findAll(){
-        return em.createQuery("select c from Category c", Category.class)
+    public List<Category> findAll(String memberId){
+        return em.createQuery("select c from Category c join fetch c.member m where m.id = :memberId", Category.class)
+                .setParameter("memberId", memberId)
                 .getResultList();
     }
 
@@ -32,7 +33,7 @@ public class CategoryRepository {
     }
 
     // 카테고리 삭제를 위한 연관 포스트 가져오기
-    public List<Post> findIncludeCategory(Long memberUid, Long categoryUid){
+    public List<Post> findIncludeCategory(Long categoryUid, Long memberUid){
         return em.createQuery("select p from Post p join fetch p.member m join fetch p.category c where m.uid = :memberUid and c.uid = :categoryUid", Post.class)
                 .setParameter("memberUid", memberUid)
                 .setParameter("categoryUid", categoryUid)
@@ -45,4 +46,19 @@ public class CategoryRepository {
     }
     // -------------------------------
 
+
+
+    /**
+     * parentUid = 0L 인 카테고리 찾기
+     */
+    public List<Category> findNonParentUid(String memberId){
+        return em.createQuery("").getResultList();
+    }
+
+    /**
+     * 해당 parentUid를 가진 카테고리
+     */
+    public List<Category> findParentUid(String memberId,Long parentUid){
+        return em.createQuery("").getResultList();
+    }
 }

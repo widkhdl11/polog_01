@@ -2,18 +2,11 @@ package com.polog.polog.domain.post.application;
 
 
 import com.polog.polog.domain.category.application.CategoryService;
-import com.polog.polog.domain.category.dao.CategoryRepository;
-import com.polog.polog.domain.category.domain.Category;
-import com.polog.polog.domain.category.dto.CategoryDto;
-import com.polog.polog.domain.category.dto.UpdateCategoryRequest;
-import com.polog.polog.domain.member.application.MemberService;
 import com.polog.polog.domain.member.dao.MemberRepository;
 import com.polog.polog.domain.member.domain.Member;
 import com.polog.polog.domain.post.dao.PostRepository;
 import com.polog.polog.domain.post.domain.Post;
-import com.polog.polog.domain.post.dto.UpdatePostRequest;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,11 +40,14 @@ public class PostService {
 
     /**
      * 포스트 목록
-     * @param uid
+     * @param
      * @return
      */
-    public List<Post> postList(Long uid){
-        return postRepository.findAllByMember(uid);
+    public List<Post> postList(String memberId){
+
+        Member findMember = memberRepository.findById(memberId);
+
+        return postRepository.findAllByMember(findMember.getUid());
     }
 
 
@@ -92,7 +88,8 @@ public class PostService {
      * @param post
      */
     public void deletePost(Post post){
-        postRepository.delete(post);
+        Post findPost = postRepository.findOne(post.getUid());
+        postRepository.delete(findPost);
     }
 
 }

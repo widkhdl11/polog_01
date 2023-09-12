@@ -7,20 +7,18 @@ import com.polog.polog.domain.member.application.MemberService;
 import com.polog.polog.domain.member.domain.Member;
 import com.polog.polog.domain.post.application.PostService;
 import com.polog.polog.domain.post.domain.Post;
-import com.polog.polog.domain.post.domain.PostState;
 import com.polog.polog.domain.post.dto.*;
-import com.polog.polog.global.util.Result;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class PostController {
 
     private final PostService postService;
@@ -34,25 +32,22 @@ public class PostController {
      * @return
      */
     @PostMapping("/api/post/new")
-    public PostingPostResponse posting(@RequestBody @Valid PostingPostRequest request) {
+    public PostingPostResponse posting(@RequestBody PostingPostRequest request) {
+        System.out.println("포스팅 생성 실행");
 
+        System.out.println(request);
+        System.out.println(request.getContent());
 
-        Member member = memberService.findOneMember(request.getMember().getUid());
+        //Member member = memberService.findOneMember(request.getMember().getUid());
+        Member member = memberService.findOneMember(1L);
 
-        Category category = categoryService.findOneCategory(request.getCategory().getUid());
+        //Category category = categoryService.findOneCategory(request.getCategory().getUid());
+        Category category = categoryService.findOneCategory(1L);
 
-        Post post = Post.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .regDate(LocalDateTime.now())
-                .member(member)
-                .category(category)
-                .state(PostState.COMP)
-                .editDate(null)
-                .build();
+        Post post = PostingPostRequest.toEntity(request, member,category);
 
         Long uid = postService.posting(post);
-
+        System.out.println("포스팅 생성 실행 완료");
         return new PostingPostResponse(uid);
     }
     /**
@@ -60,9 +55,9 @@ public class PostController {
      * @param request
      * @return
      */
-    @PutMapping("api/post/update")
+    @PatchMapping("/api/post/update")
     public PostingPostResponse postUpdate(@RequestBody UpdatePostRequest request) {
-
+        System.out.println("수정 실행");
 
         postService.updatePost(UpdatePostRequest.toEntity(request));
 
@@ -74,13 +69,14 @@ public class PostController {
 
     /**
      * 포스트 목록
-     * @param request
+     * @param
      * @return
      */
-    @PostMapping("api/posts/")
-    public Result<PostingPostResponse> postList(@RequestBody @Valid PostingPostRequest request) {
+    @GetMapping("api/posts/{memberId}")
+    public List<PostListResponse> postList(@PathVariable("memberId") String memberId ) {
+        System.out.println("포스트 목록 실행");
 
-        List<Post> findPostList = postService.postList(request.getMember().getUid());
+        List<Post> findPostList = postService.postList(memberId);
 
         List<PostListResponse> collect = findPostList.stream()
                 .map(p -> new PostListResponse(
@@ -94,33 +90,44 @@ public class PostController {
                 .collect(Collectors.toList());
 
 
-        return new Result(collect);
+        return collect;
 
     }
 
     /**
      * 포스트 상세
      * @param uid
-     * @param request
+     * @param
      * @return
      */
-    @PutMapping("/api/post/{uid}")
-    public Post findOnePost(@PathVariable Long uid, @RequestBody @Valid UpdatePostRequest request){
+    @GetMapping("/api/post/{uid}")
+    public PostDto findOnePost(@PathVariable String uid){
+        System.out.println("포스트 상세 실행");
 
-        Post findPost = postService.findOne(uid);
+        Long uid_l = Long.valueOf(uid);
 
-        return findPost;
+        Post findPost = postService.findOne(uid_l);
+        PostDto response = Post.toDto(findPost);
+
+        System.out.println("포스트 상세 종료");
+        return response;
     }
 
     /**
      * 포스트 삭제
-     * @param request
+     * @param
      */
     @DeleteMapping("/api/post/delete/{uid}")
-    public void deletePost(@PathVariable Long uid, @RequestBody DeletePostRequest request){
+    public void deletePost(@PathVariable String uid){
+        System.out.println("포스트 삭제 실행");
 
-        postService.deletePost(DeletePostRequest.toEntity(request));
+        Post post = Post.builder()
+                .uid(Long.valueOf(uid))
+                .build();
+        postService.deletePost(post);
+        //postService.deletePost(DeletePostRequest.toEntity(request));
 
+        System.out.println("포스트 삭제 종료");
     }
 
     

@@ -26,7 +26,7 @@ public class PostRepository {
     }
 
     public List<Post> findAllByMember(Long uid){
-        return em.createQuery("select p from Post p join fetch p.member m where m.uid = :uid", Post.class)
+        return em.createQuery("select p from Post p join fetch p.member m join fetch p.category c where m.uid = :uid", Post.class)
                 .setParameter("uid", uid)
                 .getResultList();
     }

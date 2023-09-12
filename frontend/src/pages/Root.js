@@ -17,3 +17,14 @@ const RootLayout = () => {
 }
 
 export default RootLayout;
+
+export const action = async({request, params}) =>{
+
+
+    console.log("실행")
+    localStorage.removeItem('expiration')
+    localStorage.removeItem('token')
+
+    window.location.reload();
+
+}

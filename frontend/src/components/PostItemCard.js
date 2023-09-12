@@ -1,18 +1,16 @@
 import { Link } from 'react-router-dom';
 import classes from './PostItemCard.module.css'
 
-const PostItemCard = () => {
-    const post = {
-        id : 1
-    }
+const PostItemCard = ({post}) => {
+    
     return(
         <>
             <li className={classes["post-li"]}>
-                <Link to ={`/posts/${post.id}`}>
+                <Link to ={`/post/${post.uid}`}>
                 <div className={classes["post-card"]}>
-                    <h3 className={classes["post-card-title"]}>제목</h3>
+                    <h3 className={classes["post-card-title"]}>{post.title}</h3>
                     <div className={classes["post-card-content"]}>
-                        내용
+                        {post.content}
                     </div>
                     <div className={classes["post-card-bottom"]}>
 

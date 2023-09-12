@@ -8,13 +8,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
@@ -81,7 +79,7 @@ class MemberControllerTest {
         Member findMember = memberService.findOneMember(1L);
 
         //when
-        memberService.deleteMember(findMember);
+        memberService.deleteMember(findMember.getUid());
 
         //then
         List<Member> findMemberList = memberService.findAllMember();

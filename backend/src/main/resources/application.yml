@@ -1,22 +1,52 @@
 spring:
+  selvlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  h2:
+    console:
+      enabled: true
+
+  cache:
+    type: redis
+
+    redis:
+      time-to-live: 3600 # 데이터 유지 시간(sec)
+      cache-null-values: true # null 캐싱 여부
+      host: localhost
+      port: 6379
+
   datasource:
     url: jdbc:h2:tcp://localhost/~/polog
+    #url: jdbc:h2:mem:testdb
     username: sa
     password:
     driver-class-name: org.h2.Driver
+    #driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate:
-        #show_sql: true
+        show_sql: true
         format_sql: true
         default_batch_fetch_size: 1000 #최적화 옵션
+    defer-datasource-initialization: true
 
 logging.level:
- org.hibernate.SQL: debug
- org.hibernate.type: trace
+  org.hibernate.SQL: debug
+  org.hibernate.type: trace
+  org.springframework: DEBUG
+  org.springframework.security: DEBUG
+
+jwt:
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+
 #logging:
 #  level:
 #    org:
@@ -25,3 +55,8 @@ logging.level:
 #        type:
 #          descriptor:
 #            sql: trace
+
+aes:
+  secret-key: AES_PRIVATE_KEY_THIS_TEST_32BYTE
+  #secret-key: amFld29uLXBvbG9nMDEtcmVmcmVzaC10b2tlbi1qYWV3b24tcG9sb2cwMS1yZWZyZXNoLXRva2VuLWphZXdvbi1wb2xvZzAxLXJlZnJlc2gtdG9rZW4t
+  #jaewon-polog01-refresh-token-jaewon-polog01-refresh-token-jaewon-polog01-refresh-token-

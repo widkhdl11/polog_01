@@ -3,6 +3,7 @@ package com.polog.polog.domain.post.domain;
 import com.polog.polog.domain.category.domain.Category;
 import com.polog.polog.domain.category.dto.CategoryDto;
 import com.polog.polog.domain.member.domain.Member;
+import com.polog.polog.domain.post.dto.PostDto;
 import com.polog.polog.domain.post.dto.PostingPostRequest;
 import com.polog.polog.domain.post.dto.UpdatePostRequest;
 import jakarta.persistence.*;
@@ -77,6 +78,16 @@ public class Post {
         return post;
     }
 
+    public static PostDto toDto(Post post){
+        return PostDto.builder()
+                .uid(post.getUid())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .member(Member.toDto(post.getMember()))
+                .category(Category.toDto(post.getCategory()))
+                .build();
+    }
+
     //=== 비즈니스 로직 ===
 
     /**
@@ -92,6 +103,7 @@ public class Post {
         this.category = post.getCategory();
         this.state = PostState.COMP;
     }
+
 
 
 

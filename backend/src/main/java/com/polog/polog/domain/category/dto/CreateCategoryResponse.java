@@ -13,6 +13,10 @@ public class CreateCategoryResponse {
 
 
     private Long uid;
+    private String name;
+    private Long parentUid;
+    private int order;
+    private int step;
 
-    private List<CreateCategoryListResponse> categoryList = new ArrayList<>();
+
 }

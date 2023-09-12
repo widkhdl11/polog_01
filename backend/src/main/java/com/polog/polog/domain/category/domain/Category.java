@@ -1,7 +1,11 @@
 package com.polog.polog.domain.category.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.polog.polog.domain.category.dto.CategoryDto;
+import com.polog.polog.domain.category.dto.LoadCategoryResponse;
 import com.polog.polog.domain.category.dto.UpdateCategoryRequest;
+import com.polog.polog.domain.member.domain.Member;
+import com.polog.polog.domain.member.dto.MemberDto;
 import com.polog.polog.domain.post.dto.UpdatePostRequest;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,6 +38,35 @@ public class Category {
     @Column(name="category_order", nullable = false)
     private int order;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    //@JsonManagedReference // 순환참조 방지
+    @JoinColumn(name = "member_uid")
+    private Member member;
+
+    @Column(name = "category_step")
+    private int step;
+
+    // === 생성 메서드 ===
+    public static CategoryDto toDto(Category category){
+        return CategoryDto.builder()
+                .uid(category.getUid())
+                .name(category.getName())
+                .parentUid(category.getParentUid())
+                .order(category.getOrder())
+                .member(Member.toDto(category.getMember()))
+                .step(category.getStep())
+                .build();
+    }
+
+    public static LoadCategoryResponse toLoadResponseDto(Category category){
+        return LoadCategoryResponse.builder()
+                .uid(category.getUid())
+                .name(category.getName())
+                .parentUid(category.getParentUid())
+                .order(category.getOrder())
+                .step(category.getStep())
+                .build();
+    }
 
     // === 비즈니스 로직 ===
     /**
@@ -42,8 +75,9 @@ public class Category {
 
     public void updateCategory(Category category){
         this.name = category.getName();
-        this.parentUid = category.getParentUid();
         this.order = category.getOrder();
+        this.parentUid = category.getParentUid();
+        this.step = category.getStep();
     }
 
 }

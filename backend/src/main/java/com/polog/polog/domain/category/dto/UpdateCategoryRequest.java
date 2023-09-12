@@ -7,10 +7,12 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
 @Builder
+@ToString
 public class UpdateCategoryRequest {
 
     private Long uid;
@@ -20,6 +22,7 @@ public class UpdateCategoryRequest {
     private Long parentUid;
 
     private int order;
+    private int step;
 
 
     //=== 비즈니스 로직 ===
@@ -29,6 +32,7 @@ public class UpdateCategoryRequest {
                 .name(request.getName())
                 .parentUid(request.getParentUid())
                 .order(request.getOrder())
+                .step(request.getStep())
                 .build();
 
     }

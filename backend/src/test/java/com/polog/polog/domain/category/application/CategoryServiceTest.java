@@ -3,9 +3,11 @@ package com.polog.polog.domain.category.application;
 import com.polog.polog.domain.category.api.CategoryController;
 import com.polog.polog.domain.category.domain.Category;
 import com.polog.polog.domain.category.dto.CreateCategoryRequest;
+import com.polog.polog.domain.category.dto.DeleteCategoryRequest;
 import com.polog.polog.domain.category.dto.UpdateCategoryRequest;
 import com.polog.polog.domain.member.application.MemberService;
 import com.polog.polog.domain.member.domain.Member;
+import com.polog.polog.domain.member.dto.MemberDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +34,14 @@ class CategoryServiceTest {
     @DisplayName("카테고리 생성 및 가져오기")
     void createCategory() throws Exception {
         //given
+        Member member = memberService.findOneMember(1L);
+        MemberDto memberDto = Member.toDto(member);
+
         CreateCategoryRequest request = CreateCategoryRequest.builder()
                 .name("생성 테스트 카테고리")
                 .order(1)
                 .parentUid(1L)
+                .member(memberDto)
                 .build();
 
 
@@ -82,9 +88,9 @@ class CategoryServiceTest {
     @DisplayName("모든 카테고리 출력")
     void findAllCategory() throws Exception  {
         //given
-
+        Member member = memberService.findOneMember(1L);
         //when
-        List<Category> categoryList = categoryService.findAllCategory();
+        List<Category> categoryList = categoryService.findAllCategory(member.getId());
 
         //then
         assertEquals(categoryList.size(), 2);
@@ -93,15 +99,25 @@ class CategoryServiceTest {
     @Test
     @DisplayName("카테고리 삭제")
     void deleteCategory() {
+
         //given
         Category findCategory = categoryService.findOneCategory(1L);
         Member findMember = memberService.findOneMember(1L);
+
+        MemberDto memberDto = Member.toDto(findMember);
+
+        DeleteCategoryRequest dto = DeleteCategoryRequest.builder()
+                .uid(findCategory.getUid())
+                .member(memberDto)
+                .build();
+
+
         //when
-        categoryService.deleteCategory(findMember, findCategory);
+        categoryService.deleteCategory(DeleteCategoryRequest.toEntity(dto));
 
         //then
 
-        List<Category> categoryList = categoryService.findAllCategory();
+        List<Category> categoryList = categoryService.findAllCategory(findMember.getId());
         assertEquals(categoryList.size(), 1);
     }
     

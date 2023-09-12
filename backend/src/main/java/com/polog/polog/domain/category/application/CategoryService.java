@@ -2,11 +2,8 @@ package com.polog.polog.domain.category.application;
 
 import com.polog.polog.domain.category.dao.CategoryRepository;
 import com.polog.polog.domain.category.domain.Category;
-import com.polog.polog.domain.category.dto.UpdateCategoryRequest;
-import com.polog.polog.domain.member.domain.Member;
-import com.polog.polog.domain.post.application.PostService;
-import com.polog.polog.domain.post.dao.PostRepository;
 import com.polog.polog.domain.post.domain.Post;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +16,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final EntityManager em;
 
     /**
      * 카테고리 생성
@@ -43,24 +41,43 @@ public class CategoryService {
     /**
      * 카테고리 모두 찾기
      */
-    public List<Category> findAllCategory(){
-        return categoryRepository.findAll();
+    public List<Category> findAllCategory(String memberId){
+        return categoryRepository.findAll(memberId);
     }
+
+    /**
+     * parentUid = 0L 인 카테고리 찾기
+     */
+    public List<Category> findNonParentUid(String memberId){
+        return categoryRepository.findNonParentUid(memberId);
+    }
+
+    /**
+     * 해당 parentUid를 가진 카테고리
+     */
+    public List<Category> findParentUid(String memberId,Long parentUid){
+        return categoryRepository.findParentUid(memberId,parentUid);
+    }
+
 
     /**
      * 카테고리 삭제
      */
     @Transactional
-    public void deleteCategory(Member member, Category category){
+    public void deleteCategory(Category category){
 
         // 카테고리 삭제를 위한 연관 포스트 삭제
-        List<Post> findPostList = categoryRepository.findIncludeCategory(member.getUid(), category.getUid());
+        Category findCategory = categoryRepository.findOne(category.getUid());
+
+        List<Post> findPostList = categoryRepository.findIncludeCategory(category.getUid(), category.getMember().getUid());
+
         for(Post post : findPostList){
             categoryRepository.deletePost(post);
         }
 
-
-        categoryRepository.delete(category);
+        if(findCategory != null){
+            categoryRepository.delete(findCategory);
+        }
     }
 
     /**
@@ -68,6 +85,7 @@ public class CategoryService {
      */
     @Transactional
     public void updateCategory(Category category){
+
         Category findCategory = categoryRepository.findOne(category.getUid());
 
         findCategory.updateCategory(category);
