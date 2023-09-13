@@ -2,6 +2,7 @@ package com.polog.polog.global.config;
 
 import com.polog.polog.domain.member.application.MemberService;
 import com.polog.polog.global.auth.jwt.*;
+import com.polog.polog.global.redis.application.CustomUserDetailsService;
 import com.polog.polog.global.redis.application.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -36,6 +38,7 @@ public class WebSecurityConfig {
     private final AES128Config aes128Config;
     private final RedisService redisService;
     private final MemberService memberService;
+    private final CustomUserDetailsService customUserDetailsService;
 
 //    @Bean
 //    public PasswordEncoder passwordEncoder() {
@@ -76,17 +79,16 @@ public class WebSecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
 
-                .and()
-//                .addFilterBefore(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class)
-//                .addFilterAfter(jwtFilter, JwtLoginFilter.class)
-                .apply(new CustomFilterConfigurer())
 
                 .and()
                 .authorizeHttpRequests(authorizeHttpRequests->authorizeHttpRequests
                     .requestMatchers("/api/**").permitAll()
                     .requestMatchers(PathRequest.toH2Console()).permitAll()
                     .anyRequest().authenticated()
-                );
+                )
+//                .addFilterBefore(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterAfter(jwtFilter, JwtLoginFilter.class)
+                .apply(new CustomFilterConfigurer());
 
 
 //                .formLogin(login->
@@ -110,13 +112,14 @@ public class WebSecurityConfig {
 
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
             JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authenticationManager,
-                    tokenProvider, aes128Config, redisService, memberService);
+                    tokenProvider, aes128Config, redisService, memberService, customUserDetailsService);
 
             JwtFilter jwtFilter = new JwtFilter(tokenProvider, redisService);
+
             jwtLoginFilter.setFilterProcessesUrl("/api/login");
 
             builder
-                    .addFilter(jwtLoginFilter)
+                    .addFilterBefore(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class)
                     .addFilterAfter(jwtFilter, JwtLoginFilter.class);
         }
     }

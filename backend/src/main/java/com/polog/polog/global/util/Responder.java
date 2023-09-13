@@ -1,8 +1,8 @@
 package com.polog.polog.global.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.polog.polog.domain.member.domain.Member;
 import com.polog.polog.global.common.error.ErrorCode;
+import com.polog.polog.global.redis.dao.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,7 +13,7 @@ public class Responder {
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void loginSuccessResponse(HttpServletResponse response, Member findMember) throws IOException {
+    public static void loginSuccessResponse(HttpServletResponse response, CustomUserDetails findMember) throws IOException {
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         response.getOutputStream().write(objectMapper.writeValueAsBytes(findMember));

@@ -37,7 +37,7 @@ public class Member {
     @Column(name = "email", length = 20, nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     //@JsonBackReference //순환참조 방지
     private List<Post> posts = new ArrayList<>();
 

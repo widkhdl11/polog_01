@@ -37,6 +37,7 @@ public class JwtFilter extends OncePerRequestFilter { //필터링을 실행하�
                     "/members/signup",
                     "/api/login",
                     "/auth/reissue");
+
     private final TokenProvider jwtTokenProvider;
     private final RedisService redisService;
 
@@ -45,6 +46,8 @@ public class JwtFilter extends OncePerRequestFilter { //필터링을 실행하�
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        System.out.println("두필터");
         try {
             String accessToken = jwtTokenProvider.resolveAccessToken(request);
             if (StringUtils.hasText(accessToken) && doNotLogout(accessToken)
@@ -71,8 +74,9 @@ public class JwtFilter extends OncePerRequestFilter { //필터링을 실행하�
     // EXCLUDE_URL과 동일한 요청이 들어왔을 경우, 현재 필터를 진행하지 않고 다음 필터 진행
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+
         boolean result = EXCLUDE_URL.stream().anyMatch(exclude -> exclude.equalsIgnoreCase(request.getServletPath()));
-        System.out.println("request.getServletPath() : "+request.getServletPath());
+        System.out.println("request.getServletPath()2 : "+request.getServletPath());
 
         return result;
     }

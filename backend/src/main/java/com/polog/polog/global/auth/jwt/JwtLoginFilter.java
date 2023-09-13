@@ -2,10 +2,10 @@ package com.polog.polog.global.auth.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.polog.polog.domain.member.application.MemberService;
-import com.polog.polog.domain.member.domain.Member;
 import com.polog.polog.global.config.AES128Config;
 import com.polog.polog.global.dto.token.TokenDto;
 import com.polog.polog.global.error.dto.LoginDto;
+import com.polog.polog.global.redis.application.CustomUserDetailsService;
 import com.polog.polog.global.redis.application.RedisService;
 import com.polog.polog.global.redis.dao.CustomUserDetails;
 import com.polog.polog.global.util.Responder;
@@ -33,6 +33,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AES128Config aes128Config;
     private final RedisService redisService;
     private final MemberService memberService;
+    private final CustomUserDetailsService customUserDetailsService;
 
 
 
@@ -49,8 +50,12 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
             System.out.println("어템프트");
             ObjectMapper objectMapper = new ObjectMapper();
             LoginDto loginDto = objectMapper.readValue(request.getInputStream(), LoginDto.class);
+
+            //Member member = memberService.findOneMemberId(loginDto.getId());
+            CustomUserDetails user = (CustomUserDetails) customUserDetailsService.loadUserByUsername(loginDto.getId());
+
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginDto.getId(), loginDto.getPassword());
+                    new UsernamePasswordAuthenticationToken(user,loginDto.getPassword(),null);
 
             setDetails(request, authenticationToken);
             return authenticationManager.authenticate(authenticationToken);
@@ -63,6 +68,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authResult) throws IOException, ServletException {
 
             System.out.println("서세스");
+            System.out.println("request.getServletPath()1 : "+request.getServletPath());
             CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
             TokenDto tokenDto = tokenProvider.generateTokenDto(customUserDetails);
             String accessToken = tokenDto.getAccessToken();
@@ -70,16 +76,17 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
             String encryptedRefreshToken = aes128Config.encryptAes(refreshToken);
             tokenProvider.accessTokenSetHeader(accessToken, response);
             tokenProvider.refreshTokenSetHeader(encryptedRefreshToken, response);
-            Member findMember = memberService.findOneMemberId(customUserDetails.getId());
 
-            Responder.loginSuccessResponse(response, findMember);
+            //Member findMember = memberService.findOneMemberId(customUserDetails.getId());
+
+            Responder.loginSuccessResponse(response, customUserDetails);
 
             // 로그인 성공시 Refresh Token Redis 저장 ( key = Email / value = Refresh Token )
             //long refreshTokenExpirationMillis = tokenProvider.getRefreshTokenExpirationMillis();
             //redisService.setValues(findMember.getId(), refreshToken, Duration.ofMillis(refreshTokenExpirationMillis));
 
-            redisService.setValuesObject(findMember.getId(), refreshToken);
-            this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
+            redisService.setValuesObject(customUserDetails.getId(), refreshToken);
 
+            this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
     }
 }
